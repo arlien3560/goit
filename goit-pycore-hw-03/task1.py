@@ -1,23 +1,32 @@
-from datetime import date, timedelta
+from datetime import datetime, date
 
-def get_days_from_today(start_date: date, end_date: date) -> int:
-    difference = (end_date - start_date).days + 1
-    weeks = difference // 7
-    days_left = difference % 7
-
-    weeks_result = weeks * 2
-
-    current_date = start_date + timedelta(days=weeks * 7)
-
-    for i in range(days_left):
-        if current_date.weekday() in [5, 6]:
-            weeks_result += 1
-        current_date += timedelta(days=1)
+def get_days_from_today(end_date_string: str) -> int:
+    """
+    Розраховує кількість днів між заданою датою і поточною датою.
     
-    return weeks_result
+    Args:
+        date (str): Рядок дати у форматі 'РРРР-ММ-ДД' (наприклад, '2020-10-09')
+    
+    Returns:
+        int: Кількість днів від заданої дати до поточної дати.
+             Позитивне число - якщо задана дата в минулому.
+             Від'ємне число - якщо задана дата в майбутньому.
+             
+    Raises:
+        ValueError: Якщо формат дати неправильний
+    """
+
+    today = date.today()
+    try:
+        end_date = datetime.strptime(end_date_string, '%Y-%m-%d').date()
+        difference = today - end_date
+        
+        return difference.days        
+    except ValueError as error:
+        raise ValueError(f"Неправильний формат дати. Очікується 'РРРР-ММ-ДД', отримано: '{end_date_string}'") from error
 
 
 if __name__ == '__main__':
-    assert get_days_from_today(date(2013, 9, 18), date(2013, 9, 23)) == 2 #"1st example"
-    assert get_days_from_today(date(2013, 1, 1), date(2013, 2, 1)) == 8 #"2nd example"
-    assert get_days_from_today(date(2013, 2, 2), date(2013, 2, 3)) == 2 #"3rd example"
+    print(get_days_from_today('2026-01-23'))
+    print(get_days_from_today('2025-11-30'))
+    print(get_days_from_today('2025-09-23'))
